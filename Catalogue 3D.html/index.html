@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalogue 3D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>🧱 Mes créations 3D</h1>
+  </header>
+
+  <main>
+    <div id="objectList" class="grid"></div>
+  </main>
+
+  <!-- Bouton pour créer un objet -->
+  <button id="addObjectBtn" class="floating-button">➕</button>
+
+  <!-- Formulaire simple -->
+  <div id="formContainer" class="hidden">
+    <h2>Ajouter un objet</h2>
+    <form id="objectForm">
+      <label>Nom :</label>
+      <input type="text" id="name" required>
+
+      <label>Description :</label>
+      <textarea id="description" required></textarea>
+
+      <label>Image :</label>
+      <input type="file" id="image" accept="image/*" required>
+
+      <label>Lien MakerWorld :</label>
+      <input type="url" id="link" placeholder="https://makerworld.com/...">
+
+      <div class="buttons">
+        <button type="submit">Ajouter ✅</button>
+        <button type="button" id="cancelBtn">Annuler ❌</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
