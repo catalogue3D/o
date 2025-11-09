@@ -1,77 +1,62 @@
-const addObjectBtn = document.getElementById('addObjectBtn');
-const formContainer = document.getElementById('formContainer');
-const cancelBtn = document.getElementById('cancelBtn');
-const objectForm = document.getElementById('objectForm');
-const objectList = document.getElementById('objectList');
+const addBtn = document.getElementById("addObjectBtn");
+const formContainer = document.getElementById("formContainer");
+const saveBtn = document.getElementById("saveObject");
+const cancelBtn = document.getElementById("cancelAdd");
+const listContainer = document.getElementById("objectsList");
 
-let objects = JSON.parse(localStorage.getItem('objects')) || [];
+let creations = JSON.parse(localStorage.getItem("creations3D")) || [];
 
-// Ouvrir formulaire
-addObjectBtn.addEventListener('click', () => {
-  formContainer.classList.remove('hidden');
+function afficherObjet(objet) {
+  const card = document.createElement("div");
+  card.classList.add("object-card");
+
+  card.innerHTML = `
+    <h3>${objet.nom}</h3>
+    <p>${objet.description}</p>
+    ${
+      objet.lien
+        ? `<a href="${objet.lien}" target="_blank">🔗 Voir sur MakerWorld</a>`
+        : ""
+    }
+  `;
+
+  listContainer.appendChild(card);
+}
+
+// Affiche les objets enregistrés
+creations.forEach(afficherObjet);
+
+// Ouvre le formulaire
+addBtn.addEventListener("click", () => {
+  formContainer.classList.remove("hidden");
 });
 
-// Annuler
-cancelBtn.addEventListener('click', () => {
-  formContainer.classList.add('hidden');
+// Annule l’ajout
+cancelBtn.addEventListener("click", () => {
+  formContainer.classList.add("hidden");
 });
 
-// Ajouter un objet
-objectForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+// Sauvegarde une nouvelle fiche
+saveBtn.addEventListener("click", () => {
+  const nom = document.getElementById("objectName").value.trim();
+  const desc = document.getElementById("objectDesc").value.trim();
+  const lien = document.getElementById("objectLink").value.trim();
 
-  const name = document.getElementById('name').value.trim();
-  const description = document.getElementById('description').value.trim();
-  const link = document.getElementById('link').value.trim();
-  const imageFile = document.getElementById('image').files[0];
-
-  if (!imageFile) {
-    alert("Merci d'ajouter une image !");
+  if (!nom || !desc) {
+    alert("Merci de remplir au moins le nom et la description !");
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const newObj = { name, description, image: event.target.result, link };
-    objects.push(newObj);
-    localStorage.setItem('objects', JSON.stringify(objects));
-    displayObjects();
-    objectForm.reset();
-    formContainer.classList.add('hidden');
-  };
-  reader.readAsDataURL(imageFile);
+  const nouvelObjet = { nom, description: desc, lien };
+  creations.push(nouvelObjet);
+
+  localStorage.setItem("creations3D", JSON.stringify(creations));
+
+  afficherObjet(nouvelObjet);
+
+  document.getElementById("objectName").value = "";
+  document.getElementById("objectDesc").value = "";
+  document.getElementById("objectLink").value = "";
+
+  formContainer.classList.add("hidden");
 });
-
-// Afficher les objets
-function displayObjects() {
-  objectList.innerHTML = '';
-  objects.forEach((obj, index) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <img src="${obj.image}" alt="${obj.name}">
-      <h3>${obj.name}</h3>
-      <p>${obj.description}</p>
-      <button onclick="deleteObject(${index})">🗑️ Supprimer</button>
-    `;
-
-    // Si un lien MakerWorld est présent, ouvrir au clic sur la carte
-    if(obj.link) {
-      card.addEventListener('click', () => {
-        window.open(obj.link, '_blank');
-      });
-    }
-
-    objectList.appendChild(card);
-  });
-}
-
-// Supprimer objet
-function deleteObject(index) {
-  objects.splice(index, 1);
-  localStorage.setItem('objects', JSON.stringify(objects));
-  displayObjects();
-}
-
-// Afficher au chargement
-displayObjects();
