@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const card = document.createElement("div");
             card.classList.add("card");
 
-            // Correction : clic = ouvre MakerWorld si lien présent
+            // Ouvrir MakerWorld si lien présent
             card.addEventListener("click", () => {
                 if (obj.link && obj.link.trim() !== "") {
                     window.open(obj.link, "_blank");
@@ -32,12 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Bouton ouvrir formulaire
+    // Ouvrir formulaire
     addObjectBtn.addEventListener("click", () => {
         formContainer.classList.remove("hidden");
     });
 
-    // Annuler formulaire
+    // Annuler
     cancelBtn.addEventListener("click", () => {
         objectForm.reset();
         formContainer.classList.add("hidden");
@@ -46,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ajouter un objet
     objectForm.addEventListener("submit", (e) => {
         e.preventDefault();
+
+        // Empêche le clic de la carte de bloquer le bouton ajouter (CORRECTION)
+        e.stopPropagation();
 
         const name = document.getElementById("name").value;
         const description = document.getElementById("description").value;
