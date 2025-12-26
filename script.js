@@ -7,15 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let objects = JSON.parse(localStorage.getItem("objects")) || [];
 
-    // Afficher les objets
+    function saveObjects() {
+        localStorage.setItem("objects", JSON.stringify(objects));
+    }
+
     function displayObjects() {
         objectList.innerHTML = "";
+
+        if (objects.length === 0) {
+            objectList.innerHTML = "<p style='text-align:center;width:100%'>Aucune impression enregistrée.</p>";
+            return;
+        }
 
         objects.forEach((obj, index) => {
             const card = document.createElement("div");
             card.classList.add("card");
 
-            // Ouvrir MakerWorld si lien présent
             card.addEventListener("click", () => {
                 if (obj.link && obj.link.trim() !== "") {
                     window.open(obj.link, "_blank");
@@ -26,29 +33,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 <img src="${obj.image}" alt="Image">
                 <h3>${obj.name}</h3>
                 <p>${obj.description}</p>
+                <button class="delete-btn">🗑 Supprimer</button>
             `;
+
+            // Bouton supprimer
+            const deleteBtn = card.querySelector(".delete-btn");
+            deleteBtn.addEventListener("click", (e) => {
+                e.stopPropagation(); // empêche l'ouverture du lien
+                const confirmDelete = confirm("Supprimer cet objet ?");
+                if (confirmDelete) {
+                    objects.splice(index, 1);
+                    saveObjects();
+                    displayObjects();
+                }
+            });
 
             objectList.appendChild(card);
         });
     }
 
-    // Ouvrir formulaire
     addObjectBtn.addEventListener("click", () => {
         formContainer.classList.remove("hidden");
     });
 
-    // Annuler
     cancelBtn.addEventListener("click", () => {
         objectForm.reset();
         formContainer.classList.add("hidden");
     });
 
-    // Ajouter un objet
     objectForm.addEventListener("submit", (e) => {
         e.preventDefault();
-
-        // Empêche le clic de la carte de bloquer le bouton ajouter (CORRECTION)
-        e.stopPropagation();
 
         const name = document.getElementById("name").value;
         const description = document.getElementById("description").value;
@@ -57,13 +71,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const reader = new FileReader();
         reader.onload = () => {
-            const imageBase64 = reader.result;
+            objects.push({
+                name,
+                description,
+                image: reader.result,
+                link
+            });
 
-            const newObj = { name, description, image: imageBase64, link };
-            objects.push(newObj);
-
-            localStorage.setItem("objects", JSON.stringify(objects));
-
+            saveObjects();
             displayObjects();
             objectForm.reset();
             formContainer.classList.add("hidden");
